@@ -39,5 +39,7 @@
     <string name="title_activity_preferences">Preferences</string>
     <string name="hints_title">Hints</string>
     <string name="hints_summary">Enables more tries at the question</string>
+    
+    <string name="score_title">Your final score</string>
 
 </resources>

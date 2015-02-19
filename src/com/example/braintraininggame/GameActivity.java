@@ -3,11 +3,12 @@ package com.example.braintraininggame;
 import java.util.Random;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,15 +17,16 @@ import android.widget.TextView;
 
 public class GameActivity extends Activity {
 
-	int difficulty;
-    int maxNumberOfValues;
-    int minNumberOfValues;
-    int correctAnswer;
+	int difficulty = 0;
+    int maxNumberOfValues = 0;
+    int minNumberOfValues = 0;
+    int numberOfTries = 0;
     int hashBtnCounter = 0;
+    Question[] questions = new Question[10];
     int questionCount = 0;
     String finalEquation;
-    int[] questionValues;
     CountDownTimer ct;
+    int time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,16 +132,23 @@ public class GameActivity extends Activity {
                 TextView tv = (TextView) findViewById(R.id.answer_text_field);
                 String answer = tv.getText().toString();
                 if(!answer.contains("?")){
-                	int answerInt = Integer.parseInt(answer);
-                	answerInt = -answerInt;
-                	tv.setText(String.valueOf(answerInt));
+                	int answerInt;
+                	try {
+                		answerInt = Integer.parseInt(answer);
+                		answerInt = -answerInt;
+                    	tv.setText(String.valueOf(answerInt));
+                	} catch (Exception e){
+                		e.printStackTrace();
+                	}
                 }
             }
         });
 
-        createOneQuestion();
+        createTenQuestions();
+        displayQuestion(questionCount);
     }
     
+    // Deletes the character that the user has wrongly typed
     private void deleteCharacter(){
     	TextView tv = (TextView) findViewById(R.id.answer_text_field);
     	String tvString = tv.getText().toString();
@@ -151,20 +160,44 @@ public class GameActivity extends Activity {
     private void checkAnswer(){
     	if(hashBtnCounter == 0){
 	    	TextView answerField = (TextView) findViewById(R.id.answer_text_field);
-	    	int answer = Integer.parseInt(answerField.getText().toString());
-	    	if(answer == correctAnswer){
+	    	int answer;
+	    	try{
+	    		answer = Integer.parseInt(answerField.getText().toString());
+	    	} catch (Exception e){
+	    		answer = 999999999;
+	    	}
+	    	if(answer == questions[questionCount].getAnswer()){
 	    		TextView tv = (TextView) findViewById(R.id.correct_or_wrong);
 	    		tv.setText("CORRECT!");
 	    		tv.setTextColor(Color.GREEN);
 	    		hashBtnCounter++;
 	    		stopCountdown();
+	    		questions[questionCount].setTimeItTook(true,time);
+	    		questionCount++;
 	    	} else {
 	    		TextView tv = (TextView) findViewById(R.id.correct_or_wrong);
 	    		tv.setText("WRONG!");
 	    		tv.setTextColor(Color.RED);
+	    		if(!PreferencesActivity.getHints(getBaseContext())){
+	    			hashBtnCounter++;
+	    			stopCountdown();
+	    			questions[questionCount].setTimeItTook(false, time);
+	    			questionCount++;
+	    			checkAnswer();
+	    		} else {
+	    			numberOfTries++;
+	    			if(numberOfTries == 4){
+	    				hashBtnCounter++;
+	    				numberOfTries = 0;
+	    				stopCountdown();
+	    				questions[questionCount].setTimeItTook(false,time);
+	    				questionCount++;
+	    				checkAnswer();
+	    			}
+	    		}
 	    	}
     	} else if(hashBtnCounter == 1) {
-    		createOneQuestion();
+    		displayQuestion(questionCount);
     		TextView answerField = (TextView) findViewById(R.id.answer_text_field);
     		answerField.setText("?");
     		TextView correctOrWrong = (TextView) findViewById(R.id.correct_or_wrong);
@@ -174,13 +207,12 @@ public class GameActivity extends Activity {
     		hashBtnCounter = 0;
     	}
     }
-
-    private void createOneQuestion() {
-    	questionCount++;
-    	if(questionCount == 10){
-    		calculateScore();
-    	}
-        if(difficulty == 0){
+    
+    //Creates all the ten questions at once before the game has started.
+    private void createTenQuestions(){
+    	// These if statements decide the difficulty of the game and how many numbers should be shown to the
+    	// user
+    	if(difficulty == 0){
             maxNumberOfValues = 2;
             minNumberOfValues = 2;
         }
@@ -196,36 +228,34 @@ public class GameActivity extends Activity {
             maxNumberOfValues = 6;
             minNumberOfValues = 4;
         }
-
-        Random random = new Random();
-        int numberOfValues = random.nextInt(maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues;
-
-        questionValues = new int[numberOfValues];
-
-        for(int i = 0; i<questionValues.length;i++){
-            questionValues[i] = random.nextInt(100) + 1;
+        
+        // This creates the questions using a random number of values depending on the difficulty above
+        for(int i = 0; i < questions.length; i++){
+	        Random random = new Random();
+	        int numberOfValues = random.nextInt(maxNumberOfValues - minNumberOfValues + 1) + minNumberOfValues;
+	        questions[i] = new Question(numberOfValues);
+	        questions[i].createQuestion();
         }
 
-        String[] operators = new String[numberOfValues - 1];
+    }
+
+    // Displays one of the questions on the screen for the user.
+    private void displayQuestion(int index) {
+    	if(questionCount == 10){
+    		calculateScore();
+    		return;
+    	}
         finalEquation = null;
 
-        for(int i = 0; i < operators.length; i++){
-            int placeHolder = random.nextInt(4);
-            if(placeHolder == 0) operators[i] = "+";
-            if(placeHolder == 1) operators[i] = "-";
-            if(placeHolder == 2) operators[i] = "*";
-            if(placeHolder == 3) operators[i] = "/";
-        }
-
-        operate(operators, questionValues);
-
-        for(int i = 0; i < questionValues.length; i++){
+        Question ques = questions[index];
+        
+        for(int i = 0; i < ques.questionValues.length; i++){
             if(i == 0)
-                finalEquation = Integer.toString(questionValues[i]) + operators[i];
-            else if (i == questionValues.length - 1)
-                finalEquation = finalEquation + Integer.toString(questionValues[i]);
+                finalEquation = Integer.toString(ques.questionValues[i]) + ques.operators[i];
+            else if (i == ques.questionValues.length - 1)
+                finalEquation = finalEquation + Integer.toString(ques.questionValues[i]);
             else
-                finalEquation = finalEquation + Integer.toString(questionValues[i]) + operators [i];
+                finalEquation = finalEquation + Integer.toString(ques.questionValues[i]) + ques.operators[i];
         }
 
         TextView tv = (TextView) findViewById(R.id.question_text_field);
@@ -233,25 +263,32 @@ public class GameActivity extends Activity {
         startCountdown();
     }
 
-    public void operate(String[] operator, int[] questionValues) {
-        correctAnswer = 0;
-    	correctAnswer += questionValues[0];
-        for(int i = 0; i < operator.length; i++){
-        	if(operator[i] == "+"){
-        		correctAnswer += questionValues[i+1];
-        	} else if (operator[i] == "-"){
-        		correctAnswer -= questionValues[i+1];
-        	} else if (operator[i] == "*"){
-        		correctAnswer = Math.round(correctAnswer * questionValues[i+1]);
-        	} else if (operator[i] == "/"){
-        		correctAnswer = Math.round(correctAnswer / questionValues[i+1]);
-        	}
-        }
-        
-        Log.wtf("dfdfdklasjdskljdsalkdjaskldsj", correctAnswer + "  ");
-    }
+    // Calculates the score of the user at the end of the game.
+    private void calculateScore() {
+    	new AlertDialog.Builder(this)
+        .setTitle(R.string.score_title)
+        .setMessage("You got " + Question.points + " points! Please go back to the main screen")
+        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				finish();
+			}
+		})
+        .show();
+    	
+    	difficulty = 0;
+        maxNumberOfValues = 0;
+        minNumberOfValues = 0;
+        numberOfTries = 0;
+        hashBtnCounter = 0;
+        questions = new Question[10];
+        questionCount = 0;
+        finalEquation = null;
+        time = 0;
+	}
 
-    public void input(int i){
+    // When user presses the buttons, this updates the answer field with the numbers on the buttons
+    private void input(int i){
         TextView tv = (TextView) findViewById(R.id.answer_text_field);
         String text = tv.getText().toString();
         if(text.contains("?")){
@@ -265,7 +302,8 @@ public class GameActivity extends Activity {
     	ct = new CountDownTimer(10000,1000){
     		public void onTick(long millisUntilFinished) {
     			TextView tv = (TextView) findViewById(R.id.countdown_timer);
-    			tv.setText("Time Remaining: " + millisUntilFinished / 1000 + " Seconds");
+    			tv.setText("Time Remaining: " + Math.round(millisUntilFinished / 1000) + " Seconds");
+    			time = Math.round(millisUntilFinished/1000);
     	     }
 
     	     public void onFinish() {
@@ -296,7 +334,7 @@ public class GameActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, Preferences.class);
+            Intent intent = new Intent(this, PreferencesActivity.class);
             startActivity(intent);
         }
 
