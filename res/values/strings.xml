@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Brain Training Game</string>
+    <string name="action_settings">Settings</string>
+    <string name="new_game">New Game</string>
+    <string name="continue_game">Continue</string>
+    <string name="about">About</string>
+    <string name="exit">Exit</string>
+    <string name="about_label">About the Game</string>
+    <string name="about_summary">This is how the game works...</string>
+    <string name="exit_label">Exiting...</string>
+    <string name="exit_summary">Would you like to save the current game?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="difficulty">Select Difficulty</string>
+    <string name="novice_label">Novice</string>
+    <string name="easy_label">Easy</string>
+    <string name="medium_label">Medium</string>
+    <string name="guru_label">Guru</string>
+    <string name="title_activity_game">Brain Training Game</string>
+    <string name="question_placeholder_text">Your question will appear here</string>
+    <string name="zero">0</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <string name="delete">DEL</string>
+    <string name="hash">#</string>
+    <string name="minus">-</string>
+    <string name="guess_field">GUESS:</string>
+    <string name="question_mark">Question Here</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_preferences">Preferences</string>
+    <string name="hints_title">Hints</string>
+    <string name="hints_summary">Enables more tries at the question</string>
+
+</resources>
