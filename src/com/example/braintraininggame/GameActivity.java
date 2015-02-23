@@ -15,29 +15,32 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+// Game Activity where the game takes place
 public class GameActivity extends Activity {
 
-	int difficulty = 0;
-    int maxNumberOfValues = 0;
-    int minNumberOfValues = 0;
-    int numberOfTries = 0;
-    int hashBtnCounter = 0;
-    Question[] questions = new Question[10];
-    int questionCount = 0;
-    String finalEquation;
-    CountDownTimer ct;
-    int time;
+	private int difficulty = 0;
+    private int maxNumberOfValues = 0;
+    private int minNumberOfValues = 0;
+    private int numberOfTries = 0;
+    private int hashBtnCounter = 0;
+    private Question[] questions = new Question[10];
+    private int questionCount = 0;
+    private CountDownTimer ct;
+    private int time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        // Gets the extra information that was passed through the intent
         Bundle extras = getIntent().getExtras();
         if(extras != null){
             difficulty = extras.getInt("GAME_DIFFICULTY");
         }
 
+        // On-click listeners for all the keypad buttons
+        /* START */
         Button BtnOne = (Button) findViewById(R.id.one);
         BtnOne.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +147,8 @@ public class GameActivity extends Activity {
             }
         });
 
+        /* END */
+        
         createTenQuestions();
         displayQuestion(questionCount);
     }
@@ -157,6 +162,7 @@ public class GameActivity extends Activity {
     	tv.setText(tvString);
     }
     
+    // Checks the answer in the Answer field that the user has input. 
     private void checkAnswer(){
     	if(hashBtnCounter == 0){
 	    	TextView answerField = (TextView) findViewById(R.id.answer_text_field);
@@ -165,8 +171,10 @@ public class GameActivity extends Activity {
 	    		answer = Integer.parseInt(answerField.getText().toString());
 	    	} catch (Exception e){
 	    		answer = 999999999;
+	    		// Since this value is out of the range, it is used as a value that can be a placeholder to compare
+	    		// to.
 	    	}
-	    	if(answer == questions[questionCount].getAnswer()){
+	    	if(answer == questions[questionCount].answer){
 	    		TextView tv = (TextView) findViewById(R.id.correct_or_wrong);
 	    		tv.setText("CORRECT!");
 	    		tv.setTextColor(Color.GREEN);
@@ -183,10 +191,15 @@ public class GameActivity extends Activity {
 	    			stopCountdown();
 	    			questions[questionCount].setTimeItTook(false, time);
 	    			questionCount++;
-	    			checkAnswer();
 	    		} else {
 	    			numberOfTries++;
-	    			if(numberOfTries == 4){
+	    			// if user runs out of time or has reached maximum number of tries, it goes to the next question.
+	    			if(answer < questions[questionCount].answer){
+	    				tv.setText("Greater");
+	    			} else if (answer > questions[questionCount].answer) {
+	    				tv.setText("Less");
+	    			}
+	    			if(time == 1 || numberOfTries == 4){
 	    				hashBtnCounter++;
 	    				numberOfTries = 0;
 	    				stopCountdown();
@@ -197,6 +210,7 @@ public class GameActivity extends Activity {
 	    		}
 	    	}
     	} else if(hashBtnCounter == 1) {
+    		// This block starts the next question and the countdown for it.
     		displayQuestion(questionCount);
     		TextView answerField = (TextView) findViewById(R.id.answer_text_field);
     		answerField.setText("?");
@@ -245,7 +259,8 @@ public class GameActivity extends Activity {
     		calculateScore();
     		return;
     	}
-        finalEquation = null;
+    	
+    	String finalEquation = null;
 
         Question ques = questions[index];
         
@@ -283,7 +298,6 @@ public class GameActivity extends Activity {
         hashBtnCounter = 0;
         questions = new Question[10];
         questionCount = 0;
-        finalEquation = null;
         time = 0;
 	}
 
@@ -298,12 +312,13 @@ public class GameActivity extends Activity {
         tv.setText(text);
     }
 
+    // Starts the countdown for the user.
     private void startCountdown(){
-    	ct = new CountDownTimer(10000,1000){
+    	ct = new CountDownTimer(11000,1000){
     		public void onTick(long millisUntilFinished) {
     			TextView tv = (TextView) findViewById(R.id.countdown_timer);
     			tv.setText("Time Remaining: " + Math.round(millisUntilFinished / 1000) + " Seconds");
-    			time = Math.round(millisUntilFinished/1000);
+    			time = (int) Math.floor((millisUntilFinished/1000));
     	     }
 
     	     public void onFinish() {
@@ -314,6 +329,7 @@ public class GameActivity extends Activity {
     	  }.start();
     }
     
+    // Stops the countdown when user has entered a correct or wrong answer
     private void stopCountdown(){
     	ct.cancel();
     }

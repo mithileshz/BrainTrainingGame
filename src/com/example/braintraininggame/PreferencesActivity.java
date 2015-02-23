@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
+// Settings screen
 public class PreferencesActivity extends PreferenceActivity {
 	
 	private static final String OPT_HINTS = "hints";

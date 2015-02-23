@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+// Main activity
 public class MainActivity extends Activity {
 
 	@Override
@@ -17,6 +18,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // On-click listener for about button
         Button aboutBtn = (Button) findViewById(R.id.about_button);
         aboutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -25,6 +27,7 @@ public class MainActivity extends Activity {
             }
         });
 
+        // On-click listener for exit button
         Button exitBtn = (Button) findViewById(R.id.exit_button);
         exitBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -32,7 +35,8 @@ public class MainActivity extends Activity {
                 exit(v);
             }
         });
-
+        
+        // On-click listener for new game button
         Button newGameBtn = (Button) findViewById(R.id.new_game_button);
         newGameBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -66,6 +70,7 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    // Opens the About dialog
     private void about(View view){
         new AlertDialog.Builder(this)
                 .setTitle(R.string.about_label)
@@ -73,6 +78,7 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    // Exits the game
     private void exit(View view){
 
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -100,6 +106,8 @@ public class MainActivity extends Activity {
 
     }
 
+    
+    // Shows the dialog to choose the difficulty and start a new game
     private void newGame(View view){
         new AlertDialog.Builder(this)
                 .setTitle(R.string.difficulty)
@@ -112,6 +120,7 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    // Starts the new game with an intent to the Game Activity
     private void startGame(int i){
         Intent intent = new Intent(this,GameActivity.class);
         intent.putExtra("GAME_DIFFICULTY",i);

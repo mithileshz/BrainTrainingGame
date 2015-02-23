@@ -2,22 +2,27 @@ package com.example.braintraininggame;
 
 import java.util.Random;
 
-import android.util.Log;
-
-public class Question {
+// This class creates the questions and the answers
+public class Question{
 	
+	// The values for the question
 	public int[] questionValues;
-	private int answer;
+	// The answer to the question
+	public int answer;
+	//The operators for the question
 	public String[] operators;
+	// The overall score for these questions
 	public static int points = 0;
 	
-	int timeItTook;
+	// The time it took for the user to answer it
+	private int timeItTook;
 	
 	public Question(int numberOfValues){
 		questionValues = new int[numberOfValues];
 		operators = new String[numberOfValues - 1];
 	}
 	
+	// Creates the question
 	public void createQuestion(){
 		
 		Random random = new Random();
@@ -38,10 +43,7 @@ public class Question {
 
 	}
 	
-	public int getAnswer(){
-		return answer;
-	}
-	
+	// Calculates the answer
 	private void getFinalAnswer(){
 		answer = 0;
     	answer += questionValues[0];
@@ -56,15 +58,14 @@ public class Question {
         		answer = Math.round(answer / questionValues[i+1]);
         	}
         }
-        
-        Log.wtf("dfdfdklasjdskljdsalkdjaskldsj", answer + "  ");
 	}
 	
+	// Sets the values to get the final score of the user
 	public void setTimeItTook(boolean outcome, int time){
-		Log.wtf("Time Left", Integer.toString(time));
+		time--;
 		if(outcome){
-			timeItTook = time;
-			if(time != 0){
+			timeItTook = 10 - time;
+			if(timeItTook != 10){
 				points = points + Math.round(100/(10-time));
 			} else {
 				points = points + 100;

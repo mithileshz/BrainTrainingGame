@@ -7,9 +7,10 @@
     <string name="continue_game">Continue</string>
     <string name="about">About</string>
     <string name="exit">Exit</string>
+    <string name="question_mark">\?</string>
     <string name="about_label">About the Game</string>
-    <string name="about_summary">This is how the game works...</string>
-    <string name="exit_label">Exiting...</string>
+    <string name="about_summary">You will be provided with a question based on the difficulty you have chosen. You will have to work out the answer for the question within 10 seconds. You only get one try at each question. You can choose to turn the hints on in the settings to increase the number of tries.</string>
+    <string name="exit_label">Exiting</string>
     <string name="exit_summary">Would you like to save the current game?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -34,7 +35,6 @@
     <string name="hash">#</string>
     <string name="minus">-</string>
     <string name="guess_field">GUESS:</string>
-    <string name="question_mark">Question Here</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_preferences">Preferences</string>
     <string name="hints_title">Hints</string>

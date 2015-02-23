@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/question_text_field"
-            android:text="placeholder"
+            android:text=""
             android:layout_weight="1"
             android:textSize="@dimen/guess_text_view"
         />
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/answer_text_field"
-            android:text="\?"
+            android:text="@string/question_mark"
             android:layout_weight="1"
             android:textSize="@dimen/guess_text_view"/>
     </LinearLayout>
